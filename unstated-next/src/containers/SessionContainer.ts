@@ -1,7 +1,11 @@
 import * as React from "react";
 import { createContainer } from "unstated-next";
-import { getUuid, getLocation, createSession } from "./asnycThings";
+import { createSession } from "../asnycThings";
 import { TinyEmitter } from "tiny-emitter";
+import { ThingContainer } from "./ThingContainer";
+import { UuidContainer } from "./UuidContainer";
+import { LocationContainer } from "./LocationContainer";
+import { LoadStatus, ThingType } from "./types";
 
 // This container needs to wait for the other two to be ready
 function useSession() {
@@ -12,10 +16,6 @@ function useSession() {
   const [session, setSession] = React.useState(false);
   const loader = React.useRef<Promise<boolean>>();
   const [eventSink, setEventSink] = React.useState<TinyEmitter>();
-
-  const updater = React.useMemo(() => (field: 'thing1' | 'thing2' | 'thing3', value: string) => {
-    thingContainer.setValue(field, value);
-  }, [thingContainer])
 
   React.useEffect(() => {
     if (uuidContainer.status === LoadStatus.Loaded && locationContainer.status === LoadStatus.Loaded && status === LoadStatus.None) {
@@ -39,12 +39,12 @@ function useSession() {
         iamTheOne = false;
       };
     }
-  }, [uuidContainer, locationContainer, thingContainer, updater, status]);
+  }, [uuidContainer, locationContainer, thingContainer, status]);
 
   React.useEffect(() => {
     if (eventSink) {
-      const handler = (k: 'thing1' | 'thing2' | 'thing3', v: any) => {
-        thingContainer.setValue(k, v);
+      const handler = (k: ThingType, v: any) => {
+        thingContainer.setThing(k, v);
       };
       eventSink.on('data', handler);
       return () => { eventSink.off('data', handler); };

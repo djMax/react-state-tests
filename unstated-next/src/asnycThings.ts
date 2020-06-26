@@ -1,8 +1,9 @@
+import { v4 as uuid } from "uuid";
 import { TinyEmitter } from "tiny-emitter";
 
 export async function getUuid(): Promise<string> {
   return new Promise(accept => {
-    setTimeout(() => accept("this-is-a-uuid"), Math.random() * 4000 + 1000);
+    setTimeout(() => accept(uuid()), Math.random() * 4000 + 1000);
   });
 }
 
